@@ -2,6 +2,7 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager,Permiss
 from django.db import models
 
 class UserManager(BaseUserManager):
+    use_in_migrations = True
     def create_user(self, email, nickname, password=None):
         if not email :
             raise ValueError('must have user email')
@@ -14,7 +15,7 @@ class UserManager(BaseUserManager):
         return user
 
     def create_superuser(self, email, nickname,password ):
-        user = self.model(
+        user = self.create_user(
             email = self.normalize_email(email),
             nickname = nickname,
             password=password
@@ -25,7 +26,7 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-class User(AbstractBaseUser):
+class User(AbstractBaseUser,PermissionsMixin):
     objects = UserManager()
     email = models.EmailField(
         max_length=255,
